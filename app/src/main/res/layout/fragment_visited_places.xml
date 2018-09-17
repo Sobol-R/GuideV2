@@ -1,0 +1,41 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.guideapp.guideapp.VisitedPlacesFragment">
+
+    <RelativeLayout
+        android:visibility="gone"
+        android:id="@+id/null_vplaces"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_centerInParent="true"
+            android:id="@+id/text_null_visited_places"
+            android:textSize="18sp"
+            android:layout_marginRight="55dp"
+            android:layout_marginLeft="55dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Здесь будут отображаться посещённые вами места.\n \nОткройте карту, чтобы узнать про интересные места вокруг вас!"
+            />
+
+        <Button
+            android:id="@+id/go_to_map"
+            android:textSize="20sp"
+            android:paddingLeft="40dp"
+            android:paddingRight="40dp"
+            android:textColor="#FFF"
+            android:textAllCaps="false"
+            android:text="Карта"
+            android:background="@drawable/circle_button_black"
+            android:layout_marginBottom="100dp"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+
+</FrameLayout>
