@@ -1,0 +1,57 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.guideapp.guideapp.ChoosePlaceTypeFragment">
+
+    <RelativeLayout
+        android:background="#F6F6F6"
+        android:padding="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/near_museums"
+            android:textSize="20dp"
+            android:textAllCaps="false"
+            android:text="Музеи рядом"
+            android:background="@drawable/white_round_corner_bg"
+            android:layout_width="match_parent"
+            android:layout_height="70dp" />
+
+        <Button
+            android:id="@+id/all_museums"
+            android:layout_marginTop="20dp"
+            android:layout_below="@+id/near_museums"
+            android:textSize="20dp"
+            android:textAllCaps="false"
+            android:text="Музеи города"
+            android:background="@drawable/white_round_corner_bg"
+            android:layout_width="match_parent"
+            android:layout_height="70dp" />
+
+        <Button
+            android:id="@+id/near_cafes"
+            android:layout_marginTop="20dp"
+            android:layout_below="@+id/all_museums"
+            android:textSize="20dp"
+            android:textAllCaps="false"
+            android:text="Кафе рядом"
+            android:background="@drawable/white_round_corner_bg"
+            android:layout_width="match_parent"
+            android:layout_height="70dp" />
+
+        <Button
+            android:id="@+id/all_cafes"
+            android:layout_marginTop="20dp"
+            android:layout_below="@+id/near_cafes"
+            android:textSize="20dp"
+            android:textAllCaps="false"
+            android:text="Кафе города"
+            android:background="@drawable/white_round_corner_bg"
+            android:layout_width="match_parent"
+            android:layout_height="70dp" />
+
+    </RelativeLayout>
+
+</FrameLayout>

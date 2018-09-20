@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
                 Fragment fragment = null;
 
                 if (linearLayout == map) {
-                    fragment = new MapFragment(null);
+                    fragment = new MapFragment();
                 } else if (linearLayout == vPlaces) {
                     fragment = new VisitedPlacesFragment(placeIcon, mapIcon);
                 }
@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        Fragment fragment = new MapFragment(null);
+        Fragment fragment = new MapFragment();
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.content, fragment);
@@ -110,9 +110,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        choosePlace.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Fragment fragment = new ChoosePlaceTypeFragment();
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.content, fragment);
+                fragmentTransaction.commit();
+            }
+        });
+
         checkLocationPermission();
 
-        Database.load(0, 0, null);
+        Database.load(4);
     }
 
     public void checkLocationPermission() {

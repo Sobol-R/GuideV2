@@ -92,11 +92,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
 
     Fragment fragment;
 
-    ArrayList <Integer> neededTypes = new ArrayList<>();
-
-    public MapFragment(ArrayList <Integer> types) {
-        neededTypes = types;
-    }
+    public MapFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle bundle) {
@@ -136,6 +132,8 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
                         if (location != null) {
                             latitude = location.getLatitude();
                             longitude = location.getLongitude();
+
+                            Database.getLatLng(latitude, longitude);
                         } else {
                             Toast toast = Toast.makeText(getContext(), "location == 0", Toast.LENGTH_LONG);
                             toast.show();

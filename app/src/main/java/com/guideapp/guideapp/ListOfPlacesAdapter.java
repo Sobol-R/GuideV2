@@ -64,7 +64,7 @@ public class ListOfPlacesAdapter extends RecyclerView.Adapter <ListOfPlacesViewH
     public void onItemClick(Place place) {
         place.choosen = true;
 
-        Fragment fragment = new MapFragment(null);
+        Fragment fragment = new MapFragment();
         FragmentManager fragmentManager = mainActivity.getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);

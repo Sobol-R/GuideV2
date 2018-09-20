@@ -51,7 +51,7 @@ public class VisitedPlacesFragment extends Fragment {
                 thisVPlacesIcon.setColorFilter(ContextCompat.getColor(getActivity(), R.color.uncolored), android.graphics.PorterDuff.Mode.SRC_IN);
                 thisMapIcon.setColorFilter(ContextCompat.getColor(getActivity(), R.color.colored), android.graphics.PorterDuff.Mode.SRC_IN);
 
-                Fragment fragment = new MapFragment(null);
+                Fragment fragment = new MapFragment();
                 if (fragment != null) {
                     FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

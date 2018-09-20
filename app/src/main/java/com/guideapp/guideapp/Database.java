@@ -19,30 +19,38 @@ public class Database {
     public static final String MUSEUMS_IN_CENTER_URL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=59.9386300,30.3141300&radius=1500&type=museum&keyword=cruise&key=AIzaSyCZ2QPsrCzN8KrTE234GujTFlaRQQjQ5oI";
     public static final String CAFES_IN_CENTER = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=59.9386300,30.3141300&radius=1500&type=cafe&keyword=cruise&key=AIzaSyCZ2QPsrCzN8KrTE234GujTFlaRQQjQ5oI";
     public static final String NEAR_BY_SEARCH_ = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=";
-    private static final String KEY_ = "AIzaSyCZ2QPsrCzN8KrTE234GujTFlaRQQjQ5oI";
+    private static final String API_KEY = "AIzaSyCZ2QPsrCzN8KrTE234GujTFlaRQQjQ5oI";
     public static final String MUSEUM_TYPE = "&radius=1500&type=museum&keyword=cruise";
     public static final String CAFE_TYPE = "&radius=1500&type=cafe&keyword=cruise";
     public static final String ALL_MUSEUMS_URL = "https://maps.googleapis.com/maps/api/place/textsearch/json?query=museums+in+Sankt-Peterburg&key=AIzaSyCZ2QPsrCzN8KrTE234GujTFlaRQQjQ5oI";
     public static final String ALL_CAFES_URL = "https://maps.googleapis.com/maps/api/place/textsearch/json?query=cafes+in+Sankt-Peterburg&key=AIzaSyCZ2QPsrCzN8KrTE234GujTFlaRQQjQ5oI";
 
+   static double latitude;
+   static double longitude;
+
     public static   ArrayList <Place> VISITED_PLACES = new ArrayList<>();
     public static ArrayList <Place> PLACES = new ArrayList<>();
-    public static ArrayList <String> typesOfPlacesSearch = new ArrayList<>();
 
-    public static void load(double latitude, double longitude, ArrayList <Integer> neededTypes) {
-        typesOfPlacesSearch.add(ALL_MUSEUMS_URL);
-        typesOfPlacesSearch.add(MUSEUMS_IN_CENTER_URL);
-        typesOfPlacesSearch.add(NEAR_BY_SEARCH_ + latitude + "," + longitude + MUSEUM_TYPE + KEY_);
-        typesOfPlacesSearch.add(ALL_CAFES_URL);
-        typesOfPlacesSearch.add(CAFES_IN_CENTER);
-        typesOfPlacesSearch.add(NEAR_BY_SEARCH_ + latitude + "," + longitude + CAFE_TYPE);
+    public static void getLatLng(double lat, double lng) {
+        latitude = lat;
+        longitude = lng;
+    }
 
+    public static void load(int id) {
         String url;
 
-        if (neededTypes == null) {
-            url = MUSEUMS_IN_CENTER_URL;
-        } else {
-            url = typesOfPlacesSearch.get(neededTypes.get(0));
+        switch (id) {
+            case 0:
+                url = NEAR_BY_SEARCH_ + latitude + ',' + longitude + MUSEUM_TYPE + API_KEY;
+                break;
+            case 1:
+                url = ALL_MUSEUMS_URL;
+                break;
+            case 2:
+                url = NEAR_BY_SEARCH_ + latitude + ',' + longitude + CAFE_TYPE + API_KEY;
+                break;
+            default:
+                url = ALL_CAFES_URL;
         }
 
         Request request = new Request.Builder()
@@ -90,7 +98,6 @@ public class Database {
             PLACES.add(new Place(latitude, longitude, iconPath, id, name /*open*/, placeId,
                     rating, vicinity, photoLink /*type*/));
         }
-
         EventBus.getDefault().post(new MessageEvent());
     }
 
