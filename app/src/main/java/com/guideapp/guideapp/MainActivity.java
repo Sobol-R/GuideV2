@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
     Button choosePlace;
     Button showPlaces;
+    FrameLayout fgContent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
 
         choosePlace = findViewById(R.id.choose_place);
         showPlaces = findViewById(R.id.show_places);
+
+        fgContent = findViewById(R.id.fg_content);
 
         final Map <LinearLayout, ImageView> menuMp = new HashMap<LinearLayout, ImageView>() {
             {
@@ -74,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
                 Fragment fragment = null;
 
                 if (linearLayout == map) {
-                    fragment = new MapFragment();
+                    fragment = new MapFragment(0);
                 } else if (linearLayout == vPlaces) {
                     fragment = new VisitedPlacesFragment(placeIcon, mapIcon);
                 }
@@ -82,16 +86,16 @@ public class MainActivity extends AppCompatActivity {
                 if (fragment != null) {
                     FragmentManager fragmentManager = getSupportFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.content, fragment);
+                    fragmentTransaction.replace(R.id.bg_content, fragment);
                     fragmentTransaction.commit();
                 }
             }
         };
 
-        Fragment fragment = new MapFragment();
+        Fragment fragment = new MapFragment(1);
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.content, fragment);
+        fragmentTransaction.replace(R.id.bg_content, fragment);
         fragmentTransaction.commit();
 
         map.setOnClickListener(onClickListener);
@@ -101,11 +105,12 @@ public class MainActivity extends AppCompatActivity {
         showPlaces.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Fragment fragment = new ListOfPlacesFragment();
+                fgContent.setVisibility(View.VISIBLE);
+                Fragment fragment = new ListOfPlacesFragment(fgContent);
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                fragmentTransaction.replace(R.id.content, fragment);
+                fragmentTransaction.replace(R.id.fg_content, fragment);
                 fragmentTransaction.commit();
             }
         });
@@ -113,17 +118,16 @@ public class MainActivity extends AppCompatActivity {
         choosePlace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                fgContent.setVisibility(View.VISIBLE);
                 Fragment fragment = new ChoosePlaceTypeFragment();
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.content, fragment);
+                fragmentTransaction.replace(R.id.fg_content, fragment);
                 fragmentTransaction.commit();
             }
         });
 
         checkLocationPermission();
-
-        Database.load(4);
     }
 
     public void checkLocationPermission() {

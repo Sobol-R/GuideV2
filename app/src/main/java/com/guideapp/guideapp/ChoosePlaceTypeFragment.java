@@ -23,10 +23,12 @@ public class ChoosePlaceTypeFragment extends Fragment {
     Button nearCafes;
     Button allCafes;
 
+    View fragmentView;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View fragmentView = inflater.inflate(R.layout.fragment_choose_place_type, container, false);
+        fragmentView = inflater.inflate(R.layout.fragment_choose_place_type, container, false);
 
         nearMuseums = fragmentView.findViewById(R.id.near_museums);
         allMuseums = fragmentView.findViewById(R.id.all_museums);
@@ -46,7 +48,11 @@ public class ChoosePlaceTypeFragment extends Fragment {
        View.OnClickListener onClickListener = new View.OnClickListener() {
            @Override
            public void onClick(View v) {
-               Database.load(id);
+               Fragment fragment = new MapFragment(id);
+               FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+               FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+               fragmentTransaction.replace(R.id.bg_content, fragment);
+               fragmentTransaction.commit();
            }
        };
 

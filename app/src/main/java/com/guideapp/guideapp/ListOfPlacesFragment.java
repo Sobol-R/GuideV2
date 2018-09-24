@@ -9,11 +9,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 public class ListOfPlacesFragment extends Fragment {
 
-    public ListOfPlacesFragment() {
-        // Required empty public constructor
+    FrameLayout thisFgContent;
+
+    public ListOfPlacesFragment(FrameLayout fgContent) {
+        thisFgContent = fgContent;
     }
 
     @Override
@@ -21,7 +24,7 @@ public class ListOfPlacesFragment extends Fragment {
                              Bundle savedInstanceState) {
         View fragmentView = inflater.inflate(R.layout.fragment_list_of_places, container, false);
 
-        ListOfPlacesAdapter listOfPlacesAdapter = new ListOfPlacesAdapter((MainActivity) getActivity());
+        ListOfPlacesAdapter listOfPlacesAdapter = new ListOfPlacesAdapter((MainActivity) getActivity(), thisFgContent);
         RecyclerView recyclerView = fragmentView.findViewById(R.id.list_of_places_recycler_view);
 
         recyclerView.setAdapter(listOfPlacesAdapter);

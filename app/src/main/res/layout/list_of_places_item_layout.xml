@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout
-    android:padding="3dp"
+    android:padding="5dp"
     android:layout_marginTop="20dp"
-    android:background="#2000"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="130dp">
@@ -19,13 +18,14 @@
             android:layout_height="match_parent">
 
             <ImageView
-                android:layout_marginRight="10dp"
+                android:layout_margin="5dp"
                 android:id="@+id/image_of_list_items"
                 android:layout_weight="3"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
             <TextView
+                android:gravity="center"
                 android:textColor="#000"
                 android:textSize="20dp"
                 android:layout_gravity="center"

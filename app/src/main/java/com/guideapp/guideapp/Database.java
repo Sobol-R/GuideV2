@@ -1,5 +1,7 @@
 package com.guideapp.guideapp;
 
+import com.google.android.gms.maps.GoogleMap;
+
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,16 +43,17 @@ public class Database {
 
         switch (id) {
             case 0:
-                url = NEAR_BY_SEARCH_ + latitude + ',' + longitude + MUSEUM_TYPE + API_KEY;
+                //url = NEAR_BY_SEARCH_ + latitude + ',' + longitude + MUSEUM_TYPE + API_KEY;
+                url = MUSEUMS_IN_CENTER_URL;
                 break;
             case 1:
-                url = ALL_MUSEUMS_URL;
+                url = MUSEUMS_IN_CENTER_URL;
                 break;
             case 2:
                 url = NEAR_BY_SEARCH_ + latitude + ',' + longitude + CAFE_TYPE + API_KEY;
                 break;
             default:
-                url = ALL_CAFES_URL;
+                url = CAFES_IN_CENTER;
         }
 
         Request request = new Request.Builder()
@@ -98,8 +101,13 @@ public class Database {
             PLACES.add(new Place(latitude, longitude, iconPath, id, name /*open*/, placeId,
                     rating, vicinity, photoLink /*type*/));
         }
-        EventBus.getDefault().post(new MessageEvent());
+        EventBus.getDefault().post(new MessageEvent(MapFragment.mgoogleMap));
     }
 
-    public static class MessageEvent { /* Additional fields if needed */ }
+    public static class MessageEvent {
+        public MessageEvent(GoogleMap googleMap) {
+            this.googleMap = googleMap;
+        }
+        GoogleMap googleMap;
+    }
 }

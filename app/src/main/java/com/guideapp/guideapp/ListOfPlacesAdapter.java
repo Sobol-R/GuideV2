@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import com.bumptech.glide.Glide;
 
@@ -21,9 +22,11 @@ public class ListOfPlacesAdapter extends RecyclerView.Adapter <ListOfPlacesViewH
 
     String photoRequestBegin;
     String photoRequestEnd;
+    FrameLayout fgContent;
 
-    public ListOfPlacesAdapter(MainActivity mainActivity) {
+    public ListOfPlacesAdapter(MainActivity mainActivity, FrameLayout fgContent) {
         this.mainActivity = mainActivity;
+        this.fgContent = fgContent;
     }
 
     @NonNull
@@ -63,12 +66,12 @@ public class ListOfPlacesAdapter extends RecyclerView.Adapter <ListOfPlacesViewH
 
     public void onItemClick(Place place) {
         place.choosen = true;
-
-        Fragment fragment = new MapFragment();
+        fgContent.setVisibility(View.GONE);
+        Fragment fragment = new MapFragment(0);
         FragmentManager fragmentManager = mainActivity.getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        fragmentTransaction.replace(R.id.content, fragment);
+        fragmentTransaction.replace(R.id.bg_content, fragment);
         fragmentTransaction.commit();
     }
 

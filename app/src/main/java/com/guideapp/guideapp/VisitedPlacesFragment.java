@@ -1,20 +1,15 @@
 package com.guideapp.guideapp;
 
-import android.app.ActionBar;
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 public class VisitedPlacesFragment extends Fragment {
@@ -51,11 +46,11 @@ public class VisitedPlacesFragment extends Fragment {
                 thisVPlacesIcon.setColorFilter(ContextCompat.getColor(getActivity(), R.color.uncolored), android.graphics.PorterDuff.Mode.SRC_IN);
                 thisMapIcon.setColorFilter(ContextCompat.getColor(getActivity(), R.color.colored), android.graphics.PorterDuff.Mode.SRC_IN);
 
-                Fragment fragment = new MapFragment();
+                Fragment fragment = new MapFragment(0);
                 if (fragment != null) {
                     FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.content, fragment);
+                    fragmentTransaction.replace(R.id.bg_content, fragment);
                     fragmentTransaction.commit();
                 }
             }

@@ -25,7 +25,7 @@
             android:layout_below="@+id/near_museums"
             android:textSize="20dp"
             android:textAllCaps="false"
-            android:text="Музеи города"
+            android:text="Музеи в центре города"
             android:background="@drawable/white_round_corner_bg"
             android:layout_width="match_parent"
             android:layout_height="70dp" />
@@ -47,7 +47,7 @@
             android:layout_below="@+id/near_cafes"
             android:textSize="20dp"
             android:textAllCaps="false"
-            android:text="Кафе города"
+            android:text="Кафе в центре города"
             android:background="@drawable/white_round_corner_bg"
             android:layout_width="match_parent"
             android:layout_height="70dp" />

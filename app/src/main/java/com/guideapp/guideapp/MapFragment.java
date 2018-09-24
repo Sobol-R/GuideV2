@@ -2,34 +2,23 @@ package com.guideapp.guideapp;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
-import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -37,32 +26,22 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.PlaceDetectionClient;
-import com.google.android.gms.location.places.PlacePhotoMetadata;
-import com.google.android.gms.location.places.PlacePhotoMetadataBuffer;
-import com.google.android.gms.location.places.PlacePhotoMetadataResponse;
-import com.google.android.gms.location.places.PlacePhotoResponse;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.mancj.slideup.SlideUp;
-import com.mancj.slideup.SlideUpBuilder;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -92,7 +71,12 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
 
     Fragment fragment;
 
-    public MapFragment() {}
+    public static GoogleMap mgoogleMap;
+    int placeType;
+
+    public MapFragment(int placeType) {
+        if (placeType != 0) this.placeType = placeType;
+    }
 
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle bundle) {
@@ -110,6 +94,8 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {
+
+        mgoogleMap = googleMap;
 
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -145,30 +131,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
 
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SPB.getCenter(), 12));
 
-        for (int i = 0; i < Database.PLACES.size(); i++) {
-            Place place = Database.PLACES.get(i);
-
-            double latitude = place.latitude;
-            double longitude = place.longitude;
-
-            if (place.choosen) {
-                place.choosen = false;
-
-                googleMap.addMarker(new MarkerOptions()
-                        .zIndex(2)
-                        .title(place.name)
-                        .position(new LatLng(latitude, longitude)));
-            } else {
-                googleMap.addMarker(new MarkerOptions()
-                        .zIndex(1)
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-                        .title(place.name)
-                        .position(new LatLng(latitude, longitude)));
-            }
-
-            placesMap.put(place.name, place);
-
-        }
+        Database.load(placeType);
 
         startLocationUpdates();
 
@@ -213,19 +176,31 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
         fragmentTransaction.commit();
     }
 
-    public void getIcon(String path) {
+    public void addPlacesToMap(GoogleMap googleMap) {
+        for (int i = 0; i < Database.PLACES.size(); i++) {
+            Place place = Database.PLACES.get(i);
 
-        Glide
-                .with(getContext())
-                .asBitmap()
-                .load(path)
-                .into(new SimpleTarget<Bitmap>() {
-                    @SuppressLint("ClickableViewAccessibility")
-                    @Override
-                    public void onResourceReady(@NonNull final Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                        bitmap = resource;
-                    }
-                });
+            double latitude = place.latitude;
+            double longitude = place.longitude;
+
+            if (place.choosen) {
+                place.choosen = false;
+
+                googleMap.addMarker(new MarkerOptions()
+                        .zIndex(2)
+                        .title(place.name)
+                        .position(new LatLng(latitude, longitude)));
+            } else {
+                googleMap.addMarker(new MarkerOptions()
+                        .zIndex(1)
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                        .title(place.name)
+                        .position(new LatLng(latitude, longitude)));
+            }
+
+            placesMap.put(place.name, place);
+
+        }
     }
 
     @Override
@@ -242,7 +217,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(Database.MessageEvent event) {
-
+        addPlacesToMap(event.googleMap);
     }
 
     @SuppressLint("MissingPermission")
