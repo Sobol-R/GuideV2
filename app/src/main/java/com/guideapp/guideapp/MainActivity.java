@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.DragAndDropPermissions;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -78,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
                 Fragment fragment = null;
 
                 if (linearLayout == map) {
-                    fragment = new MapFragment(0);
+                    fragment = new MapFragment(1);
                 } else if (linearLayout == vPlaces) {
                     fragment = new VisitedPlacesFragment(placeIcon, mapIcon);
                 }
@@ -119,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 fgContent.setVisibility(View.VISIBLE);
-                Fragment fragment = new ChoosePlaceTypeFragment();
+                Fragment fragment = new ChoosePlaceTypeFragment(fgContent);
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.fg_content, fragment);

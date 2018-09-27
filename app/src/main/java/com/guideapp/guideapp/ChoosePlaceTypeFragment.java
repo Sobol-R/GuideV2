@@ -2,6 +2,7 @@ package com.guideapp.guideapp;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.annotation.FloatRange;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -9,13 +10,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 
 public class ChoosePlaceTypeFragment extends Fragment {
 
-    FragmentManager fragmentManager;
+    FrameLayout fgContent;
 
-    public ChoosePlaceTypeFragment() {
-        // Required empty public constructor
+    public ChoosePlaceTypeFragment(FrameLayout fgContent) {
+        this.fgContent = fgContent;
     }
 
     Button nearMuseums;
@@ -34,7 +36,6 @@ public class ChoosePlaceTypeFragment extends Fragment {
         allMuseums = fragmentView.findViewById(R.id.all_museums);
         nearCafes = fragmentView.findViewById(R.id.near_cafes);
         allCafes = fragmentView.findViewById(R.id.all_cafes);
-        fragmentManager = getActivity().getSupportFragmentManager();
 
         nearMuseums.setOnClickListener(getOnClickListener(0));
         allMuseums.setOnClickListener(getOnClickListener(1));
@@ -43,19 +44,23 @@ public class ChoosePlaceTypeFragment extends Fragment {
 
         return fragmentView;
     }
-
    private View.OnClickListener getOnClickListener(final int id) {
        View.OnClickListener onClickListener = new View.OnClickListener() {
            @Override
            public void onClick(View v) {
-               Fragment fragment = new MapFragment(id);
-               FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-               FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-               fragmentTransaction.replace(R.id.bg_content, fragment);
-               fragmentTransaction.commit();
+               fgContent.setVisibility(View.GONE);
+               openMapFragment(3);
            }
        };
 
        return onClickListener;
+   }
+
+   private void openMapFragment(int id) {
+       Fragment fragment = new MapFragment(id);
+       FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+       FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+       fragmentTransaction.replace(R.id.bg_content, fragment);
+       fragmentTransaction.commit();
    }
 }

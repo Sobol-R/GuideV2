@@ -75,7 +75,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
     int placeType;
 
     public MapFragment(int placeType) {
-        if (placeType != 0) this.placeType = placeType;
+        this.placeType = placeType;
     }
 
     @Override
@@ -131,9 +131,9 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
 
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SPB.getCenter(), 12));
 
-        Database.load(placeType);
-
         startLocationUpdates();
+
+        Database.load(placeType);
 
         GoogleMap.OnMarkerClickListener onMarkerClickListener = new GoogleMap.OnMarkerClickListener() {
             @Override
@@ -143,13 +143,11 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
                 Place place = placesMap.get(marker.getTitle());
 
                 fragment = new PlaceHintFragment(place);
-                if (fragment != null) {
-                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.place_hint_frame, fragment);
-                    fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                    fragmentTransaction.commit();
-                }
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.place_hint_frame, fragment);
+                fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                fragmentTransaction.commit();
 
                 return false;
             }

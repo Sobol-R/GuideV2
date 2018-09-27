@@ -39,7 +39,7 @@ public class Database {
     }
 
     public static void load(int id) {
-        String url;
+        String url = null;
 
         switch (id) {
             case 0:
@@ -52,7 +52,7 @@ public class Database {
             case 2:
                 url = NEAR_BY_SEARCH_ + latitude + ',' + longitude + CAFE_TYPE + API_KEY;
                 break;
-            default:
+            case 3:
                 url = CAFES_IN_CENTER;
         }
 
