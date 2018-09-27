@@ -48,8 +48,10 @@ public class ChoosePlaceTypeFragment extends Fragment {
        View.OnClickListener onClickListener = new View.OnClickListener() {
            @Override
            public void onClick(View v) {
+               Database.PLACES.clear();
+
                fgContent.setVisibility(View.GONE);
-               openMapFragment(3);
+               openMapFragment(id);
            }
        };
 

@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 fgContent.setVisibility(View.VISIBLE);
-                Fragment fragment = new ListOfPlacesFragment(fgContent);
+                Fragment fragment = new ListOfPlacesFragment(fgContent, 0);
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);

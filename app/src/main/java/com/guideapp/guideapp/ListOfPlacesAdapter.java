@@ -23,10 +23,12 @@ public class ListOfPlacesAdapter extends RecyclerView.Adapter <ListOfPlacesViewH
     String photoRequestBegin;
     String photoRequestEnd;
     FrameLayout fgContent;
+    int placeType;
 
-    public ListOfPlacesAdapter(MainActivity mainActivity, FrameLayout fgContent) {
+    public ListOfPlacesAdapter(MainActivity mainActivity, FrameLayout fgContent, int placeType) {
         this.mainActivity = mainActivity;
         this.fgContent = fgContent;
+        this.placeType = placeType;
     }
 
     @NonNull
@@ -67,7 +69,7 @@ public class ListOfPlacesAdapter extends RecyclerView.Adapter <ListOfPlacesViewH
     public void onItemClick(Place place) {
         place.choosen = true;
         fgContent.setVisibility(View.GONE);
-        Fragment fragment = new MapFragment(0);
+        Fragment fragment = new MapFragment(placeType);
         FragmentManager fragmentManager = mainActivity.getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);

@@ -14,9 +14,11 @@ import android.widget.FrameLayout;
 public class ListOfPlacesFragment extends Fragment {
 
     FrameLayout thisFgContent;
+    int placeType;
 
-    public ListOfPlacesFragment(FrameLayout fgContent) {
+    public ListOfPlacesFragment(FrameLayout fgContent, int placeType) {
         thisFgContent = fgContent;
+        this.placeType = placeType;
     }
 
     @Override
