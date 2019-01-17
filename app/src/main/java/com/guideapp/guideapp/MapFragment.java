@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -36,13 +37,17 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.bumptech.glide.Glide.with;
@@ -73,6 +78,9 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
 
     public static GoogleMap mgoogleMap;
     int placeType;
+    boolean firstPlace = false;
+    double startLatitude;
+    double startLongitude;
 
     public MapFragment(int placeType) {
         this.placeType = placeType;
@@ -128,12 +136,11 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
                 });
 
         LatLngBounds SPB = new LatLngBounds(new LatLng(59.9343, 30.3351), new LatLng(59.9343,30.3351));
-
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SPB.getCenter(), 12));
 
         startLocationUpdates();
 
-        Database.load(placeType);
+       // Database.load(placeType);
 
         GoogleMap.OnMarkerClickListener onMarkerClickListener = new GoogleMap.OnMarkerClickListener() {
             @Override
@@ -148,7 +155,6 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
                 fragmentTransaction.replace(R.id.place_hint_frame, fragment);
                 fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 fragmentTransaction.commit();
-
                 return false;
             }
         };
@@ -159,11 +165,66 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
                 if (clicked) {
                     closePlaceHintFragment();
                 }
+                sendRouteRequest(latitude, longitude, latLng.latitude, latLng.longitude, mgoogleMap);
             }
         };
 
         googleMap.setOnMarkerClickListener(onMarkerClickListener);
         googleMap.setOnMapClickListener(onMapClickListener);
+    }
+
+    public static void sendRouteRequest(double latitude, double longitude,
+                                        double destinationLat, double destinationLng, GoogleMap googleMap) {
+        RoutesUtils routesUtils = new RoutesUtils(latitude, longitude, destinationLat, destinationLng);
+        routesUtils.sendRouteRequest();
+
+        googleMap.addMarker(new MarkerOptions()
+                .zIndex(1)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                .position(new LatLng(destinationLat, destinationLng)));
+
+        LatLngBounds place = new LatLngBounds(new LatLng(destinationLat, destinationLng), new LatLng(destinationLat,destinationLng));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place.getCenter(), 15));
+    }
+
+    private void addPoly(String encoded) {
+        List<LatLng> poly = new ArrayList<LatLng>();
+        int index = 0, len = encoded.length();
+        int lat = 0, lng = 0;
+
+        while (index < len) {
+            int b, shift = 0, result = 0;
+            do {
+                b = encoded.charAt(index++) - 63;
+                result |= (b & 0x1f) << shift;
+                shift += 5;
+            } while (b >= 0x20);
+            int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+            lat += dlat;
+
+            shift = 0;
+            result = 0;
+            do {
+                b = encoded.charAt(index++) - 63;
+                result |= (b & 0x1f) << shift;
+                shift += 5;
+            } while (b >= 0x20);
+            int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+            lng += dlng;
+
+            LatLng p = new LatLng((((double) lat / 1E5)),
+                    (((double) lng / 1E5)));
+            poly.add(p);
+
+            Polyline polyline = mgoogleMap.addPolyline(
+                    new PolylineOptions()
+                            .addAll(poly)
+                            .width(7)
+                            .color(Color.BLUE)
+                            .geodesic(true)
+            );
+
+        }
     }
 
     public void closePlaceHintFragment() {
@@ -214,8 +275,18 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(Database.MessageEvent event) {
+    public void onMessageEvent(Database.PlacesEvent event) {
         addPlacesToMap(event.googleMap);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPolylineEvent(RoutesUtils.PolylineEvent event) {
+        addPoly(event.points);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onAddressEvent(SearchPlaceFragment.AddressEvent event) {
+        sendRouteRequest(latitude, longitude, event.lat, event.lng, mgoogleMap);
     }
 
     @SuppressLint("MissingPermission")

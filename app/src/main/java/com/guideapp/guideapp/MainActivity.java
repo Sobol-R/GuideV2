@@ -1,6 +1,8 @@
 package com.guideapp.guideapp;
 
 import android.Manifest;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
@@ -11,124 +13,111 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.DragAndDropPermissions;
+import android.view.Gravity;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.mancj.slideup.SlideUp;
+import com.mancj.slideup.SlideUpBuilder;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
-    ImageView mapIcon;
-    ImageView placeIcon;
-    ImageView galleryIcon;
-    LinearLayout map;
-    LinearLayout vPlaces;
-    LinearLayout gallery;
-
-    LinearLayout colored;
-
-    Button choosePlace;
-    Button showPlaces;
     FrameLayout fgContent;
+    LinearLayout search;
+    LinearLayout menu;
+
+//    float fromX = 0;
+//    float fromY = 130;
+//    float toX;
+//    float toY = -100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mapIcon = findViewById(R.id.map_icon);
-        placeIcon = findViewById(R.id.place_icon);
-        galleryIcon = findViewById(R.id.gallery_icon);
-
-
-        map = findViewById(R.id.map_cont);
-        vPlaces = findViewById(R.id.place_cont);
-        gallery = findViewById(R.id.gallery_cont);
-
-        choosePlace = findViewById(R.id.choose_place);
-        showPlaces = findViewById(R.id.show_places);
-
         fgContent = findViewById(R.id.fg_content);
 
-        final Map <LinearLayout, ImageView> menuMp = new HashMap<LinearLayout, ImageView>() {
-            {
-                put(map, mapIcon);
-                put(vPlaces, placeIcon);
-                put(gallery, galleryIcon);
-            }
-        };
+        search = findViewById(R.id.search_button);
+        menu = findViewById(R.id.menu_button);
 
-        colored = map;
-
-        final Context context = this;
-
-        View.OnClickListener onClickListener = new View.OnClickListener() {
+        search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LinearLayout linearLayout = (LinearLayout) v;
-
-                menuMp.get(colored).setColorFilter(ContextCompat.getColor(context, R.color.uncolored), android.graphics.PorterDuff.Mode.SRC_IN);
-                colored = linearLayout;
-                menuMp.get(colored).setColorFilter(ContextCompat.getColor(context, R.color.colored), android.graphics.PorterDuff.Mode.SRC_IN);
-
-                Fragment fragment = null;
-
-                if (linearLayout == map) {
-                    fragment = new MapFragment(1);
-                } else if (linearLayout == vPlaces) {
-                    fragment = new VisitedPlacesFragment(placeIcon, mapIcon);
-                }
-
-                if (fragment != null) {
-                    FragmentManager fragmentManager = getSupportFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.bg_content, fragment);
-                    fragmentTransaction.commit();
-                }
-            }
-        };
-
-        Fragment fragment = new MapFragment(1);
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.bg_content, fragment);
-        fragmentTransaction.commit();
-
-        map.setOnClickListener(onClickListener);
-        vPlaces.setOnClickListener(onClickListener);
-        gallery.setOnClickListener(onClickListener);
-
-        showPlaces.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fgContent.setVisibility(View.VISIBLE);
-                Fragment fragment = new ListOfPlacesFragment(fgContent, 0);
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                fragmentTransaction.replace(R.id.fg_content, fragment);
-                fragmentTransaction.commit();
+                changeFragment(new SearchPlaceFragment());
+                search.setVisibility(View.GONE);
+                menu.setVisibility(View.GONE);
             }
         });
 
-        choosePlace.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fgContent.setVisibility(View.VISIBLE);
-                Fragment fragment = new ChoosePlaceTypeFragment(fgContent);
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.fg_content, fragment);
-                fragmentTransaction.commit();
-            }
-        });
+        changeFragment(new MapFragment(1));
 
         checkLocationPermission();
+    }
+
+//    private void animateDiagonalPan(View v, boolean type) {
+//        AnimatorSet animSetXY = new AnimatorSet();
+//
+//        if (type) {
+//            if (fromX == 0) {
+//                fromX = (v.getId() == R.id.menu_button ? +130 : v.getX() - 60);
+//            }
+//            toX = (v.getId() == R.id.menu_button ? -100 : 100);
+//        } else {
+//            float x = fromX;
+//            fromY = -100;
+//            fromY = toY;
+//            toY = 100;
+//            fromX = toX;
+//            toX = x;
+//        }
+//
+//        ObjectAnimator y = ObjectAnimator.ofFloat(v,
+//                "translationY",fromY, toY);
+//
+//        ObjectAnimator x = ObjectAnimator.ofFloat(v,
+//                "translationX", fromX, toX);
+//
+//        animSetXY.playTogether(x, y);
+//        animSetXY.setInterpolator(new LinearInterpolator());
+//        animSetXY.setDuration(3300);
+//        animSetXY.start();
+//
+//    }
+
+    private void changeFragment(final Fragment fragment) {
+        final FragmentManager fragmentManager = getSupportFragmentManager();
+
+        fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                List<Fragment> fragments = fragmentManager.getFragments();
+                int i = fragments.size() - 1;
+                Fragment currentFragment = fragments.get(i);
+                if (currentFragment instanceof MapFragment) {
+                    search.setVisibility(View.VISIBLE);
+                    menu.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.bg_content, fragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        fragmentTransaction.commit();
     }
 
     public void checkLocationPermission() {

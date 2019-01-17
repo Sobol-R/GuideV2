@@ -26,7 +26,7 @@ public class ListOfPlacesFragment extends Fragment {
                              Bundle savedInstanceState) {
         View fragmentView = inflater.inflate(R.layout.fragment_list_of_places, container, false);
 
-        ListOfPlacesAdapter listOfPlacesAdapter = new ListOfPlacesAdapter((MainActivity) getActivity(), thisFgContent);
+        ListOfPlacesAdapter listOfPlacesAdapter = new ListOfPlacesAdapter((MainActivity) getActivity(), thisFgContent, placeType);
         RecyclerView recyclerView = fragmentView.findViewById(R.id.list_of_places_recycler_view);
 
         recyclerView.setAdapter(listOfPlacesAdapter);

@@ -101,11 +101,11 @@ public class Database {
             PLACES.add(new Place(latitude, longitude, iconPath, id, name /*open*/, placeId,
                     rating, vicinity, photoLink /*type*/));
         }
-        EventBus.getDefault().post(new MessageEvent(MapFragment.mgoogleMap));
+        EventBus.getDefault().post(new PlacesEvent(MapFragment.mgoogleMap));
     }
 
-    public static class MessageEvent {
-        public MessageEvent(GoogleMap googleMap) {
+    public static class PlacesEvent {
+        public PlacesEvent(GoogleMap googleMap) {
             this.googleMap = googleMap;
         }
         GoogleMap googleMap;
