@@ -38,6 +38,7 @@ public class RequestUtils {
                         case "route" : RoutesUtils.parse(data);
                         case "address" : SearchPlaceFragment.parse(data);
                     }
+                    System.out.println("DATA: " + data);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

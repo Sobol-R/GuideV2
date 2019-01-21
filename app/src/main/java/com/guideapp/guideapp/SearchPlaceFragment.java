@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,10 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
@@ -35,33 +40,38 @@ public class SearchPlaceFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View fragmentView = inflater.inflate(R.layout.fragment_search_place, container, false);
-        searchText = fragmentView.findViewById(R.id.search_text);
+       // searchText = fragmentView.findViewById(R.id.search_text);
 
         Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.slide_in_bottom);
-        searchText.setAnimation(animation);
+        //searchText.setAnimation(animation);
         animation.start();
 
-        searchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    String url = "https://maps.googleapis.com/maps/api/place/textsearch/json?query=" +
-                            parseString(searchText.getText().toString()) +
-                            "&key=AIzaSyCZ2QPsrCzN8KrTE234GujTFlaRQQjQ5oI";
-                    RequestUtils requestUtils = new RequestUtils(url, "address");
-                    requestUtils.sendRequest();
+//        searchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//            @Override
+//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+//                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+//                    String url = "https://maps.googleapis.com/maps/api/place/textsearch/json?query=" +
+//                            parseString(searchText.getText().toString()) +
+//                            "&key=AIzaSyCZ2QPsrCzN8KrTE234GujTFlaRQQjQ5oI";
+//                    RequestUtils requestUtils = new RequestUtils(url, "address");
+//                    requestUtils.sendRequest();
+//
+//                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+//                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//                    fragmentTransaction.replace(R.id.bg_content, new MapFragment(1));
+//                    fragmentTransaction.addToBackStack(null);
+//                    fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+//                    fragmentTransaction.commit();
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
 
-                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.bg_content, new MapFragment(1));
-                    fragmentTransaction.addToBackStack(null);
-                    fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                    fragmentTransaction.commit();
-                    return true;
-                }
-                return false;
-            }
-        });
+//        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+//                getActivity().getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+//
+//        autocompleteFragment.onStart();
 
         return fragmentView;
     }

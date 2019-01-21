@@ -4,6 +4,7 @@ import android.Manifest;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -25,8 +26,19 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.*;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.mancj.slideup.SlideUp;
 import com.mancj.slideup.SlideUpBuilder;
+
+import org.greenrobot.eventbus.EventBus;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
@@ -38,10 +50,7 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout search;
     LinearLayout menu;
 
-//    float fromX = 0;
-//    float fromY = 130;
-//    float toX;
-//    float toY = -100;
+    int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,9 +65,16 @@ public class MainActivity extends AppCompatActivity {
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                changeFragment(new SearchPlaceFragment());
-                search.setVisibility(View.GONE);
-                menu.setVisibility(View.GONE);
+                //changeFragment(new SearchPlaceFragment());
+                try {
+                    Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
+                            .build(MainActivity.this);
+                    startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
+                } catch (GooglePlayServicesRepairableException e) {
+                    // TODO: Handle the error.
+                } catch (GooglePlayServicesNotAvailableException e) {
+                    // TODO: Handle the error.
+                }
             }
         });
 
@@ -67,35 +83,34 @@ public class MainActivity extends AppCompatActivity {
         checkLocationPermission();
     }
 
-//    private void animateDiagonalPan(View v, boolean type) {
-//        AnimatorSet animSetXY = new AnimatorSet();
-//
-//        if (type) {
-//            if (fromX == 0) {
-//                fromX = (v.getId() == R.id.menu_button ? +130 : v.getX() - 60);
-//            }
-//            toX = (v.getId() == R.id.menu_button ? -100 : 100);
-//        } else {
-//            float x = fromX;
-//            fromY = -100;
-//            fromY = toY;
-//            toY = 100;
-//            fromX = toX;
-//            toX = x;
-//        }
-//
-//        ObjectAnimator y = ObjectAnimator.ofFloat(v,
-//                "translationY",fromY, toY);
-//
-//        ObjectAnimator x = ObjectAnimator.ofFloat(v,
-//                "translationX", fromX, toX);
-//
-//        animSetXY.playTogether(x, y);
-//        animSetXY.setInterpolator(new LinearInterpolator());
-//        animSetXY.setDuration(3300);
-//        animSetXY.start();
-//
-//    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = PlaceAutocomplete.getPlace(this, data);
+                String url = "https://maps.googleapis.com/maps/api/place/textsearch/json?query=" +
+                        place.getAddress().toString().replace(' ', '+') +
+                        "&key=AIzaSyCZ2QPsrCzN8KrTE234GujTFlaRQQjQ5oI";
+                RequestUtils requestUtils = new RequestUtils(url, "address");
+                requestUtils.sendRequest();
+            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                Status status = PlaceAutocomplete.getStatus(this, data);
+                // TODO: Handle the error.
+
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
+        }
+    }
+
+    public static void parse(String data) throws JSONException {
+        JSONObject object = new JSONObject(data);
+        JSONArray results = object.getJSONArray("results");
+        JSONObject result = results.getJSONObject(0);
+        double latitude = result.getJSONObject("geometry").getJSONObject("location").getDouble("lat");
+        double longitude = result.getJSONObject("geometry").getJSONObject("location").getDouble("lng");
+        EventBus.getDefault().post(new SearchPlaceFragment.AddressEvent(latitude, longitude));
+    }
 
     private void changeFragment(final Fragment fragment) {
         final FragmentManager fragmentManager = getSupportFragmentManager();

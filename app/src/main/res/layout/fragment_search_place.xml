@@ -4,22 +4,22 @@
     android:layout_height="match_parent"
     tools:context="com.guideapp.guideapp.SearchPlaceFragment">
 
-    <EditText
-        android:imeOptions="actionSearch"
-        android:singleLine="true"
-        android:id="@+id/search_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="35dp"
-        android:layout_marginRight="35dp"
-        android:layout_marginTop="40dp"
-        android:background="@drawable/search_bg"
-        android:elevation="20dp"
-        android:fontFamily="@font/comfortaa"
-        android:gravity="center"
-        android:hint="Найти..."
-        android:padding="10dp"
-        android:textColor="#FFF"
-        android:textStyle="bold" />
+    <!--<EditText-->
+        <!--android:imeOptions="actionSearch"-->
+        <!--android:singleLine="true"-->
+        <!--android:id="@+id/search_text"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginLeft="35dp"-->
+        <!--android:layout_marginRight="35dp"-->
+        <!--android:layout_marginTop="40dp"-->
+        <!--android:background="@drawable/search_bg"-->
+        <!--android:elevation="20dp"-->
+        <!--android:fontFamily="@font/comfortaa"-->
+        <!--android:gravity="center"-->
+        <!--android:hint="Найти..."-->
+        <!--android:padding="10dp"-->
+        <!--android:textColor="#FFF"-->
+        <!--android:textStyle="bold" />-->
 
 </FrameLayout>
