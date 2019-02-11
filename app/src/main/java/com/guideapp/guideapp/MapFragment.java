@@ -2,6 +2,7 @@ package com.guideapp.guideapp;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -28,11 +29,13 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.PlaceDetectionClient;
 import com.google.android.gms.location.places.Places;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -74,13 +77,17 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
 
     FrameLayout placeHintFrame;
 
-    Fragment fragment;
-
     public static GoogleMap mgoogleMap;
     int placeType;
     boolean firstPlace = false;
     double startLatitude;
     double startLongitude;
+
+    boolean cameraMoved = false;
+
+    com.google.android.gms.location.places.Place place;
+
+    Polyline currentPolyline;
 
     public MapFragment(int placeType) {
         this.placeType = placeType;
@@ -126,7 +133,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
                         if (location != null) {
                             latitude = location.getLatitude();
                             longitude = location.getLongitude();
-
+                            moveCamera(latitude, longitude);
                             Database.getLatLng(latitude, longitude);
                         } else {
                             Toast toast = Toast.makeText(getContext(), "location == 0", Toast.LENGTH_LONG);
@@ -134,9 +141,6 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
                         }
                     }
                 });
-
-        LatLngBounds SPB = new LatLngBounds(new LatLng(59.9343, 30.3351), new LatLng(59.9343,30.3351));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SPB.getCenter(), 12));
 
         startLocationUpdates();
 
@@ -146,45 +150,46 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
             @Override
             public boolean onMarkerClick(Marker marker) {
                 clicked = true;
-
-                Place place = placesMap.get(marker.getTitle());
-
-                fragment = new PlaceHintFragment(place);
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.place_hint_frame, fragment);
-                fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                fragmentTransaction.commit();
+                openFragment(new PlaceHintFragment(place, latitude, longitude));
                 return false;
             }
         };
 
-        GoogleMap.OnMapClickListener onMapClickListener = new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-                if (clicked) {
-                    closePlaceHintFragment();
-                }
-                sendRouteRequest(latitude, longitude, latLng.latitude, latLng.longitude, mgoogleMap);
-            }
-        };
-
         googleMap.setOnMarkerClickListener(onMarkerClickListener);
-        googleMap.setOnMapClickListener(onMapClickListener);
     }
 
-    public static void sendRouteRequest(double latitude, double longitude,
+    private void openFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.place_hint_frame, fragment, "place_hint");
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        fragmentTransaction.commit();
+    }
+
+    public void sendRouteRequest(double latitude, double longitude,
                                         double destinationLat, double destinationLng, GoogleMap googleMap) {
         RoutesUtils routesUtils = new RoutesUtils(latitude, longitude, destinationLat, destinationLng);
         routesUtils.sendRouteRequest();
+        setMarker(destinationLat, destinationLng);
+    }
 
-        googleMap.addMarker(new MarkerOptions()
+    public void setMarker(double latitude, double longitude) {
+        mgoogleMap.addMarker(new MarkerOptions()
                 .zIndex(1)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-                .position(new LatLng(destinationLat, destinationLng)));
+                .position(new LatLng(latitude ,longitude)));
+        moveCamera(latitude, longitude);
+    }
 
-        LatLngBounds place = new LatLngBounds(new LatLng(destinationLat, destinationLng), new LatLng(destinationLat,destinationLng));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place.getCenter(), 15));
+    private void moveCamera(double latitude, double longitude) {
+        LatLng latLng = new LatLng(latitude, longitude);
+        mgoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(
+                new CameraPosition.Builder()
+                        .target(latLng)
+                        .tilt(90)
+                        .zoom(17)
+                        .build()), 2000, null);
     }
 
     private void addPoly(String encoded) {
@@ -216,7 +221,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
                     (((double) lng / 1E5)));
             poly.add(p);
 
-            Polyline polyline = mgoogleMap.addPolyline(
+            currentPolyline = mgoogleMap.addPolyline(
                     new PolylineOptions()
                             .addAll(poly)
                             .width(7)
@@ -225,14 +230,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
             );
 
         }
-    }
-
-    public void closePlaceHintFragment() {
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.remove(fragment);
-        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
-        fragmentTransaction.commit();
+        moveCamera(latitude, longitude);
     }
 
     public void addPlacesToMap(GoogleMap googleMap) {
@@ -285,13 +283,14 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onAddressEvent(SearchPlaceFragment.AddressEvent event) {
-        sendRouteRequest(latitude, longitude, event.lat, event.lng, mgoogleMap);
+    public void onAddressEvent(MainActivity.AddressEvent event) {
+        this.place = event.place;
+        setMarker(place.getLatLng().latitude, place.getLatLng().longitude);
     }
 
     @SuppressLint("MissingPermission")
     private void startLocationUpdates() {
-        LocationRequest locationRequest = new LocationRequest();
+        final LocationRequest locationRequest = new LocationRequest();
         locationRequest.setInterval(2000);
         locationRequest.setFastestInterval(1000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -304,8 +303,12 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
                     return;
                 }
                 for (Location location : locationResult.getLocations()) {
-                    Log.v("GUB", "? " + location);
-                    currentLocation = location;
+                    latitude = location.getLatitude();
+                    longitude = location.getLongitude();
+                }
+                if (!cameraMoved) {
+                    moveCamera(latitude, longitude);
+                    cameraMoved = true;
                 }
             }
         };

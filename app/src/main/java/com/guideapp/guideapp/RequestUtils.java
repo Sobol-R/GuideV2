@@ -1,5 +1,7 @@
 package com.guideapp.guideapp;
 
+import android.util.Log;
+
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -13,9 +15,9 @@ import okhttp3.Response;
 public class RequestUtils {
 
     String url;
-    String type;
+    RequestType type;
 
-    public RequestUtils(String url, String type) {
+    public RequestUtils(String url, RequestType type) {
         this.url = url;
         this.type = type;
     }
@@ -33,12 +35,13 @@ public class RequestUtils {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String data = response.body().string();
+                Log.d("pr", data);
                 try {
                     switch (type) {
-                        case "route" : RoutesUtils.parse(data);
-                        case "address" : SearchPlaceFragment.parse(data);
+                        case ROUTES : RoutesUtils.parse(data);
+                        case PHOTOS : new PhotoUtils(data).parse();
+                        case WIKIPEDIA : Parse.parseWikipedia(data);
                     }
-                    System.out.println("DATA: " + data);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

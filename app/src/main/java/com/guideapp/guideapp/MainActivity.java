@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.DragAndDropPermissions;
 import android.view.Gravity;
 import android.view.View;
@@ -29,6 +30,7 @@ import android.widget.Toast;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.common.api.internal.LifecycleFragment;
 import com.google.android.gms.location.places.*;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
@@ -88,11 +90,8 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(this, data);
-                String url = "https://maps.googleapis.com/maps/api/place/textsearch/json?query=" +
-                        place.getAddress().toString().replace(' ', '+') +
-                        "&key=AIzaSyCZ2QPsrCzN8KrTE234GujTFlaRQQjQ5oI";
-                RequestUtils requestUtils = new RequestUtils(url, "address");
-                requestUtils.sendRequest();
+                System.out.println("LATLNG : " + place.getLatLng().latitude + " " + place.getLatLng().longitude);
+                EventBus.getDefault().post(new AddressEvent(place));
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(this, data);
                 // TODO: Handle the error.
@@ -103,13 +102,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static void parse(String data) throws JSONException {
-        JSONObject object = new JSONObject(data);
-        JSONArray results = object.getJSONArray("results");
-        JSONObject result = results.getJSONObject(0);
-        double latitude = result.getJSONObject("geometry").getJSONObject("location").getDouble("lat");
-        double longitude = result.getJSONObject("geometry").getJSONObject("location").getDouble("lng");
-        EventBus.getDefault().post(new SearchPlaceFragment.AddressEvent(latitude, longitude));
+    private void closeButtons() {
+        search.setVisibility(View.GONE);
+        menu.setVisibility(View.GONE);
+    }
+
+    private void openButtons() {
+        search.setVisibility(View.VISIBLE);
+        menu.setVisibility(View.VISIBLE);
     }
 
     private void changeFragment(final Fragment fragment) {
@@ -121,9 +121,11 @@ public class MainActivity extends AppCompatActivity {
                 List<Fragment> fragments = fragmentManager.getFragments();
                 int i = fragments.size() - 1;
                 Fragment currentFragment = fragments.get(i);
-                if (currentFragment instanceof MapFragment) {
-                    search.setVisibility(View.VISIBLE);
-                    menu.setVisibility(View.VISIBLE);
+                Fragment firstFragment = fragments.get(0);
+                if (currentFragment instanceof PlaceHintFragment) {
+                   closeButtons();
+                } else if (currentFragment instanceof LifecycleFragment && firstFragment instanceof MapFragment) {
+                    openButtons();
                 }
             }
         });
@@ -152,5 +154,12 @@ public class MainActivity extends AppCompatActivity {
                         MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
             }
         }
+    }
+
+    public static class AddressEvent {
+        public AddressEvent(Place place) {
+            this.place = place;
+        }
+        Place place;
     }
 }

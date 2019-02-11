@@ -2,12 +2,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.guideapp.guideapp.PictureSliderFragment">
+    tools:context="com.guideapp.guideapp.WebViewFragment">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/picture_slider_recycler_view"
+    <WebView
+        android:id="@+id/web_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </android.support.v7.widget.RecyclerView>
+        android:layout_height="wrap_content"></WebView>
 
 </FrameLayout>

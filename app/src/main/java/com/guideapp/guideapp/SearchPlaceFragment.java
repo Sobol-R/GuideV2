@@ -82,9 +82,18 @@ public class SearchPlaceFragment extends Fragment {
         JSONObject object = new JSONObject(data);
         JSONArray results = object.getJSONArray("results");
         JSONObject result = results.getJSONObject(0);
-        double latitude = result.getJSONObject("geometry").getJSONObject("location").getDouble("lat");
-        double longitude = result.getJSONObject("geometry").getJSONObject("location").getDouble("lng");
-        EventBus.getDefault().post(new AddressEvent(latitude, longitude));
+        JSONObject location = result.getJSONObject("geometry").getJSONObject("location");
+        double latitude = location.getDouble("lat");
+        double longitude = location.getDouble("lng");
+        String iconPath = result.getString("icon");
+        String id = result.getString("id");
+        String name = result.getString("name");
+        //boolean open = place.getJSONObject("opening_hours").getBoolean("open_now");
+        String placeId = result.getString("place_id");
+        double rating = result.getDouble("rating");
+//        String vicinity = result.getString("vicinity");
+        String photoLink = result.getJSONArray("photos").getJSONObject(0).getString("photo_reference");
+        Place place = new Place(latitude, longitude, iconPath, id, name, placeId, rating, null, photoLink);
     }
 
     private String parseString(String request) {
@@ -100,14 +109,5 @@ public class SearchPlaceFragment extends Fragment {
                 AndroidUtils.showKeyboard(getContext(), searchText);
             }
         }, 50);
-    }
-
-    public static class AddressEvent {
-        public AddressEvent(double lat, double lng) {
-            this.lat = lat;
-            this.lng = lng;
-        }
-        double lat;
-        double lng;
     }
 }
