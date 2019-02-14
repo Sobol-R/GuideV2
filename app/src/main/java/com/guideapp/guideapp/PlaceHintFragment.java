@@ -92,11 +92,11 @@ public class PlaceHintFragment extends Fragment {
     }
 
     private void openFragment() {
-//        RequestUtils requestUtils = new RequestUtils(setPhotoUrl(), RequestType.PHOTOS);
-//        requestUtils.sendRequest();
+        new RequestUtils(setPhotoUrl(), RequestType.PHOTOS).sendRequest();
+        new RequestUtils(setWikiUrl(), RequestType.WIKIPEDIA).sendRequest();
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.place_hint_frame, new WebViewFragment(String.valueOf(place.getName())));
+        fragmentTransaction.replace(R.id.place_hint_frame, new PlaceDescriptionFragment());
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         fragmentTransaction.commit();
@@ -109,6 +109,6 @@ public class PlaceHintFragment extends Fragment {
     }
 
     private String setWikiUrl() {
-        return "https://en.wikipedia.org/w/api.php?action=query&list=search&format=json&srsearch=" + place.getName().toString().replace(' ', '+');
+        return "https://ru.wikipedia.org/api/rest_v1/page/summary/" + place.getName().toString().replace(' ', '_');
     }
 }

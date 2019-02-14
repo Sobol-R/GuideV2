@@ -37,6 +37,7 @@ public class PlaceDescriptionFragment extends Fragment {
     ViewPager viewPager;
     CircleIndicator indicator;
     List <String> photoReferences;
+    TextView description;
 
     public PlaceDescriptionFragment() {
 
@@ -49,6 +50,7 @@ public class PlaceDescriptionFragment extends Fragment {
 
         viewPager = fragmentView.findViewById(R.id.view_pager);
         indicator = fragmentView.findViewById(R.id.indicator);
+        description = fragmentView.findViewById(R.id.description_text);
 
         return fragmentView;
     }
@@ -60,10 +62,19 @@ public class PlaceDescriptionFragment extends Fragment {
         indicator.setViewPager(viewPager);
     }
 
+    private void setDescription(String text) {
+        description.setText(text);
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPhotoEvent(PhotoUtils.PhotoEvent event) {
         this.photoReferences = event.references;
         setAdapter();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onWikipediaEvent(Parse.WikipediaEvent event) {
+        setDescription(event.text);
     }
 
     @Override

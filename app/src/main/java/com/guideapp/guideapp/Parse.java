@@ -36,19 +36,15 @@ public class Parse {
 
     public static void parseWikipedia(String data) throws JSONException {
         JSONObject object = new JSONObject(data);
-        JSONObject query = object.getJSONObject("query");
-        JSONArray search = query.getJSONArray("search");
-        JSONObject res = search.getJSONObject(0);
-        int id = res.getInt("pageid");
-        Log.d("wikipageid", String.valueOf(id));
-        EventBus.getDefault().post(new WikipediaEvent(id));
+        String text = object.getString("extract");
+        EventBus.getDefault().post(new WikipediaEvent(text));
     }
 
     public static class WikipediaEvent {
-        public WikipediaEvent(int id) {
-            this.id = id;
+        public WikipediaEvent(String text) {
+            this.text = text;
         }
-        int id;
+        String text;
     }
 
 }
