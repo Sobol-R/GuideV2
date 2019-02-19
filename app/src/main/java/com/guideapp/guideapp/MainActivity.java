@@ -6,6 +6,7 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.support.multidex.MultiDex;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -57,6 +58,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        MultiDex.install(this);
+
         setContentView(R.layout.activity_main);
 
         fgContent = findViewById(R.id.fg_content);
@@ -102,34 +106,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void closeButtons() {
-        search.setVisibility(View.GONE);
-        menu.setVisibility(View.GONE);
-    }
-
-    private void openButtons() {
-        search.setVisibility(View.VISIBLE);
-        menu.setVisibility(View.VISIBLE);
-    }
-
     private void changeFragment(final Fragment fragment) {
         final FragmentManager fragmentManager = getSupportFragmentManager();
-
-        fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
-            @Override
-            public void onBackStackChanged() {
-                List<Fragment> fragments = fragmentManager.getFragments();
-                int i = fragments.size() - 1;
-                Fragment currentFragment = fragments.get(i);
-                Fragment firstFragment = fragments.get(0);
-                if (currentFragment instanceof PlaceHintFragment) {
-                   closeButtons();
-                } else if (currentFragment instanceof LifecycleFragment && firstFragment instanceof MapFragment) {
-                    openButtons();
-                }
-            }
-        });
-
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.bg_content, fragment);
         fragmentTransaction.addToBackStack(null);
@@ -162,4 +140,5 @@ public class MainActivity extends AppCompatActivity {
         }
         Place place;
     }
+
 }

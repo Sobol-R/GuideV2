@@ -48,28 +48,27 @@ public class PlaceHintFragment extends Fragment {
                              Bundle savedInstanceState) {
         final View fragmentView = inflater.inflate(R.layout.fragment_place_hint, container, false);
 
+        fragmentView.bringToFront();
+
         placeHint = fragmentView.findViewById(R.id.place_hint);
         makeRoute = fragmentView.findViewById(R.id.make_route);
 
         placeName = fragmentView.findViewById(R.id.place_name);
         placeAddress = fragmentView.findViewById(R.id.place_address);
         placeRating = fragmentView.findViewById(R.id.place_rating);
-        placeType = fragmentView.findViewById(R.id.place_type);
-        placeOpen = fragmentView.findViewById(R.id.place_open);
+//        placeType = fragmentView.findViewById(R.id.place_type);
+//        placeOpen = fragmentView.findViewById(R.id.place_open);
 
         placeName.setText(String.valueOf(place.getName()));
         placeAddress.setText(String.valueOf(place.getAddress()));
-        placeRating.setText(String.valueOf("Рейтинг: " + place.getRating()));
-        placeType.setText(String.valueOf("Тип: " + place.getPlaceTypes().get(0)));
+//        placeRating.setText(String.valueOf("Рейтинг: " + place.getRating()));
+//        placeType.setText(String.valueOf("Тип: " + place.getPlaceTypes().get(0)));
 
-        Animation topSlideAnim = AnimationUtils.loadAnimation(getContext(), R.anim.slide_in_top);
-        Animation bottomSlideAnim = AnimationUtils.loadAnimation(getContext(), R.anim.slide_in_bottom);
+        final Animation topSlideAnim = AnimationUtils.loadAnimation(getContext(), R.anim.slide_in_top);
+        final Animation bottomSlideAnim = AnimationUtils.loadAnimation(getContext(), R.anim.slide_in_bottom);
 
         placeHint.setAnimation(topSlideAnim);
         makeRoute.setAnimation(topSlideAnim);
-
-        photoUrl = setPhotoUrl();
-        Log.d("pr", photoUrl);
 
         makeRoute.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,26 +76,35 @@ public class PlaceHintFragment extends Fragment {
                 RoutesUtils routesUtils = new RoutesUtils(userLat, userLng,
                         place.getLatLng().latitude, place.getLatLng().longitude);
                 routesUtils.sendRouteRequest();
-                getFragmentManager().popBackStack();
             }
         });
 
-        fragmentView.setOnClickListener(new View.OnClickListener() {
+        placeHint.setOnTouchListener(new TouchListener(getContext(), this));
+
+        placeHint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openFragment();
             }
         });
 
+        fragmentView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFragmentManager().popBackStack();
+            }
+
+        });
+
         return fragmentView;
     }
 
-    private void openFragment() {
+    public void openFragment() {
         new RequestUtils(setPhotoUrl(), RequestType.PHOTOS).sendRequest();
         new RequestUtils(setWikiUrl(), RequestType.WIKIPEDIA).sendRequest();
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.place_hint_frame, new PlaceDescriptionFragment());
+        fragmentTransaction.replace(R.id.place_hint_frame, new PlaceDescriptionFragment(place));
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         fragmentTransaction.commit();

@@ -1,54 +1,118 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    android:id="@+id/slide"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.guideapp.guideapp.PlaceDescriptionFragment">
 
-    <RelativeLayout
-        android:background="#FFF"
-        android:id="@+id/description_content"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <android.support.v4.view.ViewPager
-            android:id="@+id/view_pager"
-            android:layout_width="match_parent"
-            android:layout_height="300dp" >
-        </android.support.v4.view.ViewPager>
-
-        <me.relex.circleindicator.CircleIndicator
-            android:layout_marginTop="5dp"
-            android:layout_below="@+id/view_pager"
-            app:ci_drawable="@drawable/indicator_bg"
-            android:id="@+id/indicator"
-            android:layout_width="match_parent"
-            android:layout_height="30dp" />
-
-        <ScrollView
-            android:layout_below="@+id/indicator"
+        <RelativeLayout
+            android:elevation="10dp"
+            android:background="@drawable/round_border"
+            android:id="@+id/description_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <ImageView
+                android:layout_marginTop="10dp"
+                android:layout_centerHorizontal="true"
+                android:tint="#000"
+                android:background="@drawable/stick"
+                android:layout_width="30dp"
+                android:layout_height="5dp" />
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_margin="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/comfortaa"
+                android:text="Название места"
+                android:textAllCaps="false"
+                android:textColor="#000"
+                android:textSize="25sp"
+                android:textStyle="bold" />
+
+            <android.support.v4.view.ViewPager
+                android:layout_below="@+id/name"
+                android:id="@+id/view_pager"
+                android:layout_width="match_parent"
+                android:layout_height="360dp" >
+            </android.support.v4.view.ViewPager>
+
+            <me.relex.circleindicator.CircleIndicator
+                android:layout_below="@+id/name"
+                android:layout_marginBottom="5dp"
+                app:ci_drawable="@drawable/indicator_bg"
+                android:id="@+id/indicator"
+                android:layout_width="match_parent"
+                android:layout_height="30dp" />
+
             <android.support.v7.widget.CardView
-                android:layout_margin="10dp"
-                app:cardBackgroundColor="#FFF"
-                app:cardCornerRadius="25dp"
+                app:cardCornerRadius="10dp"
+                android:elevation="5dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_below="@+id/view_pager"
+                android:layout_marginBottom="10dp"
+                android:id="@+id/audio"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <TextView
-                    android:layout_margin="10dp"
-                    android:id="@+id/description_text"
-                    android:fontFamily="@font/comfortaa"
-                    android:textSize="18sp"
+                <LinearLayout
+                    android:background="@drawable/audio_bg"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:id="@+id/play_audio"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/route_bg"
+                        android:padding="10dp">
+
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:src="@drawable/ic_play_arrow_black_24dp"
+                            android:tint="#FFF" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_marginLeft="20dp"
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/comfortaa"
+                        android:textColor="#FFF"
+                        android:textSize="15sp"
+                        android:text="Слушать описаиние"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
 
             </android.support.v7.widget.CardView>
 
-        </ScrollView>
+            <TextView
+                android:id="@+id/open_description"
+                android:background="?attr/selectableItemBackground"
+                android:padding="10dp"
+                android:textStyle="bold"
+                android:fontFamily="@font/comfortaa"
+                android:textColor="#4509E5"
+                android:layout_marginBottom="10dp"
+                android:textSize="20sp"
+                android:layout_marginLeft="40dp"
+                android:text="Показать описание"
+                android:layout_below="@+id/audio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
-    </RelativeLayout>
+        </RelativeLayout>
 
 </FrameLayout>

@@ -6,14 +6,18 @@
     tools:context="com.guideapp.guideapp.PlaceImageFragment">
 
     <android.support.v7.widget.CardView
+        android:layout_gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        app:cardCornerRadius="25dp"
+        app:cardElevation="5dp">
 
         <ImageView
-            android:scaleType="center"
             android:id="@+id/place_fragment_image"
             android:layout_width="match_parent"
-            android:layout_height="300dp" />
+            android:layout_height="300dp"
+            android:scaleType="center" />
 
     </android.support.v7.widget.CardView>
 

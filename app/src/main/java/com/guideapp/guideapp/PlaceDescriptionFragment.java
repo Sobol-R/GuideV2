@@ -1,25 +1,17 @@
 package com.guideapp.guideapp;
 
-import android.annotation.SuppressLint;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import com.bumptech.glide.Glide;
-import com.mancj.slideup.SlideUp;
-import com.mancj.slideup.SlideUpBuilder;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -29,18 +21,20 @@ import java.util.List;
 
 import me.relex.circleindicator.CircleIndicator;
 
-import static com.bumptech.glide.request.RequestOptions.centerCropTransform;
-import static com.bumptech.glide.request.RequestOptions.fitCenterTransform;
-
 public class PlaceDescriptionFragment extends Fragment {
 
+    TextView name;
     ViewPager viewPager;
     CircleIndicator indicator;
     List <String> photoReferences;
-    TextView description;
+    String description;
+    com.google.android.gms.location.places.Place place;
+    RelativeLayout content;
+    TextView openDescription;
+    LinearLayout playAudio;
 
-    public PlaceDescriptionFragment() {
-
+    public PlaceDescriptionFragment(com.google.android.gms.location.places.Place place) {
+        this.place = place;
     }
 
     @Override
@@ -48,9 +42,35 @@ public class PlaceDescriptionFragment extends Fragment {
                              Bundle savedInstanceState) {
         View fragmentView = inflater.inflate(R.layout.fragment_place_description, container, false);
 
+        fragmentView.bringToFront();
+
+        openDescription = fragmentView.findViewById(R.id.open_description);
         viewPager = fragmentView.findViewById(R.id.view_pager);
         indicator = fragmentView.findViewById(R.id.indicator);
-        description = fragmentView.findViewById(R.id.description_text);
+        name = fragmentView.findViewById(R.id.name);
+        content = fragmentView.findViewById(R.id.description_content);
+        playAudio = fragmentView.findViewById(R.id.play_audio);
+
+        name.setText(place.getName());
+        final Animation topSlideAnim = AnimationUtils.loadAnimation(getContext(), R.anim.slide_in_top);
+        content.setAnimation(topSlideAnim);
+        topSlideAnim.start();
+
+        content.setOnTouchListener(new TouchListener(getContext(), this));
+
+        openDescription.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new ReadDescriptionDialog(place.getName().toString(), description).show(getFragmentManager(), "description");
+            }
+        });
+
+        playAudio.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //new TextToSpeech(description);
+            }
+        });
 
         return fragmentView;
     }
@@ -62,10 +82,6 @@ public class PlaceDescriptionFragment extends Fragment {
         indicator.setViewPager(viewPager);
     }
 
-    private void setDescription(String text) {
-        description.setText(text);
-    }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPhotoEvent(PhotoUtils.PhotoEvent event) {
         this.photoReferences = event.references;
@@ -74,7 +90,7 @@ public class PlaceDescriptionFragment extends Fragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onWikipediaEvent(Parse.WikipediaEvent event) {
-        setDescription(event.text);
+        description = event.text;
     }
 
     @Override

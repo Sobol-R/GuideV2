@@ -84,6 +84,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
     double startLongitude;
 
     boolean cameraMoved = false;
+    boolean onMapClicked = false;
 
     com.google.android.gms.location.places.Place place;
 
@@ -177,7 +178,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
     public void setMarker(double latitude, double longitude) {
         mgoogleMap.addMarker(new MarkerOptions()
                 .zIndex(1)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET))
                 .position(new LatLng(latitude ,longitude)));
         moveCamera(latitude, longitude);
     }
@@ -224,8 +225,8 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
             currentPolyline = mgoogleMap.addPolyline(
                     new PolylineOptions()
                             .addAll(poly)
-                            .width(7)
-                            .color(Color.BLUE)
+                            .width(15)
+                            .color(Color.parseColor("#4B02F7"))
                             .geodesic(true)
             );
 

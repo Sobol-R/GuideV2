@@ -1,21 +1,20 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="#9000"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     tools:context="com.guideapp.guideapp.PlaceHintFragment">
 
         <RelativeLayout
             android:id="@+id/place_hint_cont"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <RelativeLayout
-                android:layout_alignParentBottom="true"
-                android:layout_marginBottom="100dp"
-                android:elevation="20dp"
-                android:layout_marginRight="10dp"
+                android:elevation="7dp"
+                android:layout_marginBottom="20dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:id="@+id/place_hint"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -24,14 +23,23 @@
                 android:paddingLeft="30dp"
                 android:paddingTop="10dp">
 
+                <ImageView
+                    android:layout_centerHorizontal="true"
+                    android:id="@+id/stick"
+                    android:layout_marginBottom="6dp"
+                    android:background="@drawable/stick"
+                    android:layout_width="30dp"
+                    android:layout_height="5dp" />
+
                 <TextView
+                    android:layout_below="@+id/stick"
                     android:fontFamily="@font/comfortaa"
                     android:id="@+id/place_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="3dp"
                     android:text="Название Места"
-                    android:textColor="#FFF"
+                    android:textColor="#000"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -43,7 +51,7 @@
                     android:layout_below="@id/place_name"
                     android:layout_marginBottom="3dp"
                     android:text="Адрес: "
-                    android:textColor="#FFF"
+                    android:textColor="#000"
                     android:textSize="15sp" />
 
                 <TextView
@@ -54,50 +62,27 @@
                     android:layout_below="@id/place_address"
                     android:layout_marginBottom="3dp"
                     android:text="Рейтинг: "
-                    android:textColor="#FFF"
+                    android:textColor="#000"
                     android:textSize="15sp" />
 
-                <TextView
-                    android:fontFamily="@font/comfortaa"
-                    android:id="@+id/place_type"
+                <LinearLayout
+                    android:layout_centerHorizontal="true"
+                    android:layout_below="@+id/place_rating"
+                    android:id="@+id/make_route"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/place_rating"
-                    android:layout_marginBottom="3dp"
-                    android:text="Тип:"
-                    android:textColor="#FFF"
-                    android:textSize="15sp" />
+                    android:background="@drawable/route_bg"
+                    android:padding="10dp">
 
-                <TextView
-                    android:fontFamily="@font/comfortaa"
-                    android:id="@+id/place_open"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/place_type"
-                    android:text="Открыто:"
-                    android:textColor="#FFF"
-                    android:textSize="15sp" />
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_directions_black_24dp"
+                        android:tint="#FFF" />
+
+                </LinearLayout>
 
             </RelativeLayout>
-
-            <LinearLayout
-                android:layout_alignParentBottom="true"
-                android:layout_marginBottom="60dp"
-                android:layout_centerHorizontal="true"
-                android:id="@+id/make_route"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/route_bg"
-                android:elevation="20dp"
-                android:padding="10dp">
-
-                <ImageView
-                    android:layout_width="35dp"
-                    android:layout_height="35dp"
-                    android:src="@drawable/ic_directions_black_24dp"
-                    android:tint="#FFF" />
-
-            </LinearLayout>
 
         </RelativeLayout>
 
