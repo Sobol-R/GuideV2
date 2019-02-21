@@ -68,7 +68,11 @@ public class PlaceDescriptionFragment extends Fragment {
         playAudio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //new TextToSpeech(description);
+                try {
+                    new TextToSpeech(description).textToSpeech();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
 
