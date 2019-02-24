@@ -13,6 +13,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.guideapp.guideapp.ttsapi.SendTTSRequest;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -68,11 +70,7 @@ public class PlaceDescriptionFragment extends Fragment {
         playAudio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    new TextToSpeech(description).textToSpeech();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                Log.d("tts", new SendTTSRequest(description).getToken());
             }
         });
 
