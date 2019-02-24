@@ -70,7 +70,7 @@ public class PlaceDescriptionFragment extends Fragment {
         playAudio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("tts", new SendTTSRequest(description).getToken());
+                new SendTTSRequest(description).getToken();
             }
         });
 

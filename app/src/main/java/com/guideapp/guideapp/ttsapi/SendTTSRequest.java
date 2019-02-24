@@ -42,19 +42,19 @@ public class SendTTSRequest {
         ttsBody.setInput(input);
         ttsBody.setVoice(voice);
 
-        Call<TTSResponse> call = ttsApiPost.getTTS(ttsBody);
-        call.enqueue(new Callback<TTSResponse>() {
-            @Override
-            public void onResponse(Call<TTSResponse> call, Response<TTSResponse> response) {
-                if (response.isSuccessful()) {
-                    Log.d("t", "ok");
-                }
-            }
+        ttsApiPost.getTTS(ttsBody)
+                .enqueue(new Callback<TTSResponse>() {
+                    @Override
+                    public void onResponse(Call<TTSResponse> call, Response<TTSResponse> response) {
+                        encodeToken = response.body().token;
+                        System.out.println("token : " + encodeToken);
+                    }
 
-            @Override
-            public void onFailure(Call<TTSResponse> call, Throwable t) {
-            }
-        });
+                    @Override
+                    public void onFailure(Call<TTSResponse> call, Throwable t) {
+
+                    }
+                });
 
         return encodeToken;
     }
