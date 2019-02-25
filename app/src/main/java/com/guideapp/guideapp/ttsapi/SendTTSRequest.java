@@ -1,6 +1,14 @@
 package com.guideapp.guideapp.ttsapi;
 
+import android.media.MediaPlayer;
+import android.util.Base64;
 import android.util.Log;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Arrays;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -46,8 +54,27 @@ public class SendTTSRequest {
                 .enqueue(new Callback<TTSResponse>() {
                     @Override
                     public void onResponse(Call<TTSResponse> call, Response<TTSResponse> response) {
-                        encodeToken = response.body().token;
-                        System.out.println("token : " + encodeToken);
+                        encodeToken = response.body().audioContent;
+                        byte[] decodeToken = Base64.decode(encodeToken, 0);
+                        try {
+                            MediaPlayer mediaPlayer = new MediaPlayer();
+
+                            File tempMp3 = File.createTempFile("test", "mp3");
+                            tempMp3.deleteOnExit();
+                            FileOutputStream fos = new FileOutputStream(tempMp3);
+                            fos.write(decodeToken);
+                            fos.close();
+                            mediaPlayer.reset();
+
+                            FileInputStream fis = new FileInputStream(tempMp3);
+                            mediaPlayer.setDataSource(fis.getFD());
+
+                            mediaPlayer.prepare();
+                            mediaPlayer.start();
+                        } catch (IOException ex) {
+                            String s = ex.toString();
+                            ex.printStackTrace();
+                        }
                     }
 
                     @Override
