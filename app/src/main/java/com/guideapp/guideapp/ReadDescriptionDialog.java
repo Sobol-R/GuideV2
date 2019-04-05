@@ -46,12 +46,7 @@ public class ReadDescriptionDialog extends DialogFragment {
         placeName.setText(name);
         placeDescription.setText(description);
 
-        close.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss();
-            }
-        });
+        close.setOnClickListener(v -> dismiss());
     }
 
     @Override

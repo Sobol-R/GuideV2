@@ -17,6 +17,9 @@ public class ImageViewPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
+        if (position == 0) {
+            Database.PHOTOS.add(references.get(position));
+        }
         return new PlaceImageFragment(references.get(position));
     }
 

@@ -1,0 +1,91 @@
+<FrameLayout
+    android:id="@+id/main_menu_cont"
+    android:background="#9000"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.guideapp.guideapp.MainMenuFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/circle_cont"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:elevation="20dp"
+        android:background="@drawable/main_menu_bg"
+        android:layout_width="250dp"
+        android:layout_height="250dp">
+
+        <LinearLayout
+            android:id="@+id/open_excursion_menu"
+            android:elevation="10dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="20dp"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/main_menu_icon_bg"
+            android:padding="10dp">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_museum"
+                android:tint="#FFF"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/places_photos"
+            android:elevation="10dp"
+            android:layout_margin="80dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/main_menu_icon_bg"
+            android:padding="10dp">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_photo_library_black_24dp"
+                android:tint="#FFF"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:elevation="10dp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginLeft="20dp"
+            android:layout_alignParentBottom="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/main_menu_icon_bg"
+            android:padding="10dp">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_share"
+                android:tint="#FFF"/>
+
+        </LinearLayout>
+
+        <ImageView
+            android:background="?attr/selectableItemBackground"
+            android:id="@+id/close_main_menu"
+            android:src="@drawable/ic_close_black_24dp"
+            android:layout_margin="20dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_width="40dp"
+            android:layout_height="40dp" />
+
+    </RelativeLayout>
+
+    </RelativeLayout>
+
+</FrameLayout>

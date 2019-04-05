@@ -93,7 +93,7 @@ public class SearchPlaceFragment extends Fragment {
         double rating = result.getDouble("rating");
 //        String vicinity = result.getString("vicinity");
         String photoLink = result.getJSONArray("photos").getJSONObject(0).getString("photo_reference");
-        Place place = new Place(latitude, longitude, iconPath, id, name, placeId, rating, null, photoLink);
+       // Place place = new Place(latitude, longitude, iconPath, id, name, placeId, rating, null, photoLink);
     }
 
     private String parseString(String request) {
@@ -103,11 +103,7 @@ public class SearchPlaceFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        (new Handler()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                AndroidUtils.showKeyboard(getContext(), searchText);
-            }
-        }, 50);
+        (new Handler()).postDelayed(()
+                -> AndroidUtils.showKeyboard(getContext(), searchText), 50);
     }
 }

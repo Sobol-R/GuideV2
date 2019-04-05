@@ -35,8 +35,6 @@ public class PlaceHintFragment extends Fragment {
     double userLat;
     double userLng;
 
-    String photoUrl;
-
     public PlaceHintFragment(com.google.android.gms.location.places.Place place, double userLat, double userLng) {
         this.place = place;
         this.userLat = userLat;
@@ -70,31 +68,17 @@ public class PlaceHintFragment extends Fragment {
         placeHint.setAnimation(topSlideAnim);
         makeRoute.setAnimation(topSlideAnim);
 
-        makeRoute.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                RoutesUtils routesUtils = new RoutesUtils(userLat, userLng,
-                        place.getLatLng().latitude, place.getLatLng().longitude);
-                routesUtils.sendRouteRequest();
-            }
+        makeRoute.setOnClickListener(v -> {
+            RoutesUtils routesUtils = new RoutesUtils(userLat, userLng,
+                    place.getLatLng().latitude, place.getLatLng().longitude);
+            routesUtils.sendRouteRequest();
         });
 
         placeHint.setOnTouchListener(new TouchListener(getContext(), this));
 
-        placeHint.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openFragment();
-            }
-        });
+        placeHint.setOnClickListener(v -> openFragment());
 
-        fragmentView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getFragmentManager().popBackStack();
-            }
-
-        });
+        fragmentView.setOnClickListener(v -> getFragmentManager().popBackStack());
 
         return fragmentView;
     }

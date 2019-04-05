@@ -14,6 +14,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.guideapp.guideapp.ttsapi.SendTTSRequest;
+import com.guideapp.guideapp.utils.Player;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -34,6 +35,8 @@ public class PlaceDescriptionFragment extends Fragment {
     RelativeLayout content;
     TextView openDescription;
     LinearLayout playAudio;
+    LinearLayout stopAudio;
+    boolean onPlay = false;
 
     public PlaceDescriptionFragment(com.google.android.gms.location.places.Place place) {
         this.place = place;
@@ -46,32 +49,40 @@ public class PlaceDescriptionFragment extends Fragment {
 
         fragmentView.bringToFront();
 
+        List <Fragment> fragments = getFragmentManager().getFragments();
+
+        for (Fragment fragment : fragments) {
+            Log.d("fragment", fragment.toString());
+        }
+
         openDescription = fragmentView.findViewById(R.id.open_description);
         viewPager = fragmentView.findViewById(R.id.view_pager);
         indicator = fragmentView.findViewById(R.id.indicator);
         name = fragmentView.findViewById(R.id.name);
         content = fragmentView.findViewById(R.id.description_content);
         playAudio = fragmentView.findViewById(R.id.play_audio);
+        stopAudio = fragmentView.findViewById(R.id.stop_audio);
 
         name.setText(place.getName());
+        Database.PLACES_NAMES.add(place.getName().toString());
         final Animation topSlideAnim = AnimationUtils.loadAnimation(getContext(), R.anim.slide_in_top);
         content.setAnimation(topSlideAnim);
         topSlideAnim.start();
 
         content.setOnTouchListener(new TouchListener(getContext(), this));
 
-        openDescription.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new ReadDescriptionDialog(place.getName().toString(), description).show(getFragmentManager(), "description");
-            }
+        openDescription.setOnClickListener(v -> new ReadDescriptionDialog(place.getName().toString(), description).show(getFragmentManager(), "description"));
+
+        playAudio.setOnClickListener(v -> {
+            Player.play();
+            playAudio.setVisibility(View.GONE);
+            stopAudio.setVisibility(View.VISIBLE);
         });
 
-        playAudio.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new SendTTSRequest(description).getToken();
-            }
+        stopAudio.setOnClickListener(v -> {
+            Player.stop();
+            stopAudio.setVisibility(View.GONE);
+            playAudio.setVisibility(View.VISIBLE);
         });
 
         return fragmentView;
@@ -79,7 +90,6 @@ public class PlaceDescriptionFragment extends Fragment {
 
     private void setAdapter() {
         final ImageViewPagerAdapter adapter = new ImageViewPagerAdapter(getFragmentManager(), photoReferences);
-        Log.d("pr", photoReferences.toString());
         viewPager.setAdapter(adapter);
         indicator.setViewPager(viewPager);
     }
@@ -93,6 +103,13 @@ public class PlaceDescriptionFragment extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onWikipediaEvent(Parse.WikipediaEvent event) {
         description = event.text;
+        new SendTTSRequest(description).getToken();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onAudioCompleteEvent(Player.CompleteEvent event) {
+        stopAudio.setVisibility(View.GONE);
+        playAudio.setVisibility(View.VISIBLE);
     }
 
     @Override

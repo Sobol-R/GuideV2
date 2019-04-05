@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -43,6 +44,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.protobuf.DescriptorProtos;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -59,8 +61,8 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
 
     LocationManager locationManager;
 
-    double longitude;
-    double latitude;
+    public static double longitude;
+    public static double latitude;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -86,9 +88,13 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
     boolean cameraMoved = false;
     boolean onMapClicked = false;
 
+    public static int cnt = 0;
+
     com.google.android.gms.location.places.Place place;
 
     Polyline currentPolyline;
+
+    public static List<LatLng> tests = new ArrayList<>();
 
     public MapFragment(int placeType) {
         this.placeType = placeType;
@@ -104,6 +110,12 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
         mPlaceDetectionClient = Places.getPlaceDetectionClient(getContext(), null);
 
         placeHintFrame = fragmentView.findViewById(R.id.place_hint_frame);
+
+        tests.add(new LatLng(59.941208, 30.315487));
+        tests.add(new LatLng(59.942660, 30.316990));
+        tests.add(new LatLng(59.938268, 30.320013));
+        tests.add(new LatLng(59.938310, 30.315000));
+        tests.add(new LatLng(59.93858475, 30.32888895));
 
         return fragmentView;
     }
@@ -128,35 +140,79 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
         fusedLocationProviderClient.getLastLocation()
-                .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        if (location != null) {
-                            latitude = location.getLatitude();
-                            longitude = location.getLongitude();
-                            moveCamera(latitude, longitude);
-                            Database.getLatLng(latitude, longitude);
-                        } else {
-                            Toast toast = Toast.makeText(getContext(), "location == 0", Toast.LENGTH_LONG);
-                            toast.show();
-                        }
+                .addOnSuccessListener(getActivity(), location -> {
+                    if (location != null) {
+                        latitude = location.getLatitude();
+                        longitude = location.getLongitude();
+                        moveCamera(latitude, longitude);
+                        Database.getLatLng(latitude, longitude);
+                    } else {
+                        Toast toast = Toast.makeText(getContext(), "location == 0", Toast.LENGTH_LONG);
+                        toast.show();
                     }
                 });
 
         startLocationUpdates();
 
-       // Database.load(placeType);
+        GoogleMap.OnMarkerClickListener onMarkerClickListener = marker -> {
+            clicked = true;
 
-        GoogleMap.OnMarkerClickListener onMarkerClickListener = new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                clicked = true;
-                openFragment(new PlaceHintFragment(place, latitude, longitude));
-                return false;
+            if (Database.PLACES.size() != 0) {
+                for (Place p : Database.PLACES) {
+                    if (marker.getPosition().latitude == p.latitude &&
+                            marker.getPosition().longitude == p.longitude) {
+                        place = p;
+                    }
+                }
             }
+
+            openFragment(new PlaceHintFragment(place, latitude, longitude));
+            return false;
         };
 
         googleMap.setOnMarkerClickListener(onMarkerClickListener);
+    }
+
+    public static void test(ArrayList<LatLng> tests) {
+        List <LatLng> coors = new ArrayList<>();
+        coors.add(new LatLng(latitude, longitude));
+        for (int i = 0; i <= tests.size(); i++) {
+            Test res = new Test(null, 999999999);
+            for (int j = 0; j < tests.size(); j++) {
+                if (i == 0) {
+                    double cur = getDistance(latitude, longitude, tests.get(j).latitude, tests.get(j).longitude);
+                    if (cur < res.min) res = new Test(new LatLng(tests.get(j).latitude, tests.get(j).longitude), cur);
+                } else {
+                    if (i != j) {
+                        double cur = getDistance(tests.get(i-1).latitude, tests.get(i-1).longitude, tests.get(j).latitude, tests.get(j).longitude);
+                        if (cur < res.min) res = new Test(new LatLng(tests.get(j).latitude, tests.get(j).longitude), cur);
+                    }
+                }
+            }
+            coors.add(res.latLng);
+        }
+        for (int i = 1; i < coors.size(); i++) {
+            sendRouteRequest(coors.get(i-1).latitude, coors.get(i-1).longitude,
+                    coors.get(i).latitude, coors.get(i).longitude);
+        }
+    }
+
+    public static double getDistance(double lat1, double lon1, double lat2, double lon2) {
+        double R = 6371; // Radius of the earth in km
+        double dLat = deg2rad(lat2-lat1);  // deg2rad below
+        double dLon = deg2rad(lon2-lon1);
+        double a =
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+                                Math.sin(dLon/2) * Math.sin(dLon/2)
+                ;
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        double d = R * c * 1000; // Distance in km
+        return d;
+    }
+
+    public static double deg2rad(double deg) {
+        return deg * (Math.PI/180);
     }
 
     private void openFragment(Fragment fragment) {
@@ -168,14 +224,25 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
         fragmentTransaction.commit();
     }
 
-    public void sendRouteRequest(double latitude, double longitude,
-                                        double destinationLat, double destinationLng, GoogleMap googleMap) {
-        RoutesUtils routesUtils = new RoutesUtils(latitude, longitude, destinationLat, destinationLng);
+    public static void sendRouteRequest(double latitude, double longitude,
+                                        double destinationLat, double destinationLng) {
+        RoutesUtils routesUtils = new RoutesUtils(latitude, longitude,
+                destinationLat, destinationLng);
         routesUtils.sendRouteRequest();
-        setMarker(destinationLat, destinationLng);
+        setMarker(latitude, longitude);
     }
 
-    public void setMarker(double latitude, double longitude) {
+    private void makeExcursionRoute() {
+        for (int i = 1; i < Database.PLACES.size(); i++) {
+            Place place1 = Database.PLACES.get(i - 1);
+            Place place2 = Database.PLACES.get(i);
+            RoutesUtils routesUtils = new RoutesUtils(place1.latitude, place1.longitude,
+                    place2.latitude, place2.longitude);
+            routesUtils.sendRouteRequest();
+        }
+    }
+
+    public static void setMarker(double latitude, double longitude) {
         mgoogleMap.addMarker(new MarkerOptions()
                 .zIndex(1)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET))
@@ -183,7 +250,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
         moveCamera(latitude, longitude);
     }
 
-    private void moveCamera(double latitude, double longitude) {
+    public static void moveCamera(double latitude, double longitude) {
         LatLng latLng = new LatLng(latitude, longitude);
         mgoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(
                 new CameraPosition.Builder()
@@ -234,31 +301,26 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
         moveCamera(latitude, longitude);
     }
 
-    public void addPlacesToMap(GoogleMap googleMap) {
+    public void addPlacesToMap() {
         for (int i = 0; i < Database.PLACES.size(); i++) {
             Place place = Database.PLACES.get(i);
 
             double latitude = place.latitude;
             double longitude = place.longitude;
 
-            if (place.choosen) {
-                place.choosen = false;
-
-                googleMap.addMarker(new MarkerOptions()
-                        .zIndex(2)
-                        .title(place.name)
-                        .position(new LatLng(latitude, longitude)));
-            } else {
-                googleMap.addMarker(new MarkerOptions()
-                        .zIndex(1)
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-                        .title(place.name)
-                        .position(new LatLng(latitude, longitude)));
-            }
+            setMarker(latitude, longitude);
 
             placesMap.put(place.name, place);
 
         }
+    }
+
+    public void setPlacesLatLng() {
+        ArrayList <LatLng> placesLatLng = new ArrayList<>();
+        for (Place place : Database.PLACES) {
+            placesLatLng.add(place.getLatLng());
+        }
+        test(placesLatLng);
     }
 
     @Override
@@ -274,8 +336,9 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(Database.PlacesEvent event) {
-        addPlacesToMap(event.googleMap);
+    public void onMessageEvent(PlacesHintsFragment.PlacesEvent event) {
+        Log.d("ok", "onMessMap: ");
+        setPlacesLatLng();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -316,5 +379,14 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
 
         fusedLocationProviderClient.requestLocationUpdates(locationRequest,
                 locationCallback, null /* Looper */);
+    }
+
+    public static class Test {
+        LatLng latLng;
+        double min;
+        public Test(LatLng latLng, double min) {
+            this.latLng = latLng;
+            this.min = min;
+        }
     }
 }

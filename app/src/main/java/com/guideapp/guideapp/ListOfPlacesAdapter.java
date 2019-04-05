@@ -50,12 +50,12 @@ public class ListOfPlacesAdapter extends RecyclerView.Adapter <ListOfPlacesViewH
         photoRequestBegin = "https://maps.googleapis.com/maps/api/place/photo?maxheight=1000&photoreference=";
         photoRequestEnd = "&key=AIzaSyCZ2QPsrCzN8KrTE234GujTFlaRQQjQ5oI";
 
-        Glide
-                .with(mainActivity)
-                .load(photoRequestBegin + place.photoLink + photoRequestEnd)
-                .apply(fitCenterTransform())
-                .apply(centerCropTransform())
-                .into(holder.imageOfPlace);
+//        Glide
+//                .with(mainActivity)
+//                //.load(photoRequestBegin + place.photoLink + photoRequestEnd)
+//                .apply(fitCenterTransform())
+//                .apply(centerCropTransform())
+//                .into(holder.imageOfPlace);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,7 +67,7 @@ public class ListOfPlacesAdapter extends RecyclerView.Adapter <ListOfPlacesViewH
     }
 
     public void onItemClick(Place place) {
-        place.choosen = true;
+       // place.choosen = true;
         fgContent.setVisibility(View.GONE);
         Fragment fragment = new MapFragment(placeType);
         FragmentManager fragmentManager = mainActivity.getSupportFragmentManager();

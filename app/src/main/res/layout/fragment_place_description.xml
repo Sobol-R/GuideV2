@@ -84,6 +84,25 @@
 
                     </LinearLayout>
 
+                    <LinearLayout
+                        android:visibility="gone"
+                        android:id="@+id/stop_audio"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/route_bg"
+                        android:padding="10dp">
+
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:src="@drawable/ic_pause_black_24dp"
+                            android:tint="#FFF" />
+
+                    </LinearLayout>
+
                     <TextView
                         android:layout_marginLeft="20dp"
                         android:layout_gravity="center"
@@ -99,19 +118,19 @@
             </android.support.v7.widget.CardView>
 
             <TextView
+                android:fontFamily="@font/comfortaa"
                 android:id="@+id/open_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/audio"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="40dp"
                 android:background="?attr/selectableItemBackground"
                 android:padding="10dp"
-                android:textStyle="bold"
-                android:fontFamily="@font/comfortaa"
-                android:textColor="#4509E5"
-                android:layout_marginBottom="10dp"
-                android:textSize="20sp"
-                android:layout_marginLeft="40dp"
                 android:text="Показать описание"
-                android:layout_below="@+id/audio"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:textColor="#4509E5"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
         </RelativeLayout>
 

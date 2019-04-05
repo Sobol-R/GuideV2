@@ -1,0 +1,81 @@
+<FrameLayout
+    android:background="#FFF"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.guideapp.guideapp.ExcursionPreviewFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/preview_img"
+        android:foreground="#4000"
+        android:scaleType="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:textColor="#FFF"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:text="Самые популярные достопримечательности Петербурга"
+        android:layout_above="@+id/preview_description"
+        android:textSize="25dp"
+        android:textStyle="bold"
+        android:fontFamily="@font/comfortaa"
+        android:id="@+id/preview_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_above="@+id/start_excursion"
+        android:textColor="#FFF"
+        android:layout_marginBottom="30dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:text="Санкт-Петербург всегда был главным туристическим центром России. Десятки музеев с ценнейшими коллекциями, дворцово-парковые ансамбли периода расцвета классических архитектурных стилей и неповторимая атмосфера светского бала, ждут гостей города."
+        android:textSize="20dp"
+        android:textStyle="bold"
+        android:fontFamily="@font/comfortaa"
+        android:id="@+id/preview_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_marginBottom="20dp"
+        android:padding="10dp"
+        android:background="@drawable/white_circle"
+        android:layout_marginLeft="20dp"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/start_excursion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:tint="#000"
+            android:src="@drawable/ic_play_arrow_black_24dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp" />
+
+        <TextView
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:textStyle="bold"
+            android:textSize="16dp"
+            android:textColor="#000"
+            android:fontFamily="@font/comfortaa"
+            android:layout_gravity="center"
+            android:text="Начать"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    </RelativeLayout>
+
+</FrameLayout>
